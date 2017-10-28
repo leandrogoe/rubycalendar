@@ -4,51 +4,37 @@ require 'date'
 class Calendar
   def initialize(name)
     @name = name
-    @events = Hash.new()
+    @events = []
   end
-  def add_event(name, params = {})
-    if(@events.key?(name))
-      raise Exception.new("Event already exists") 
-    end
-    
+  def add_event(name, params = {})    
     event = Event.new(name, params)
-    @events[name] = event
+    @events.push(event)
+    event
   end
   def update_events(name, params)
-    if(!@events.key?(name))
-      raise Exception.new("Event does not exist") 
-    end
-    
-    @events[name].update_event(params)
-    @events[name]
+    events = events_with_name(name)
+    events.each() { | event | event.update_event(params) } 
   end
   def events_with_name(name)
-    if(!@events.key?(name))
-      raise Excepion.new("Event does not exist")
-    end if
-    @events[name]
+    @events.select(){ |event| event.name == name }
   end 
+  def find_with_regex(regex)
+    events.select() { | event | event.matches_regex?(regex) }
+  end
   def events_for_date(date)
-    for_date = @events.select() { |name, event| event.is_for_date?(date) }
-    for_date.collect() { |event_name, event| event }
+    @events.select() { |event| event.is_for_date?(date) }
   end if
   def events_for_today()
     events_for_date(Date.today())
   end
   def events_for_this_week()
-    for_week = @events.select() { |name, event| event.is_for_this_week?() }
-    for_week.collect() { |event_name, event| event }
+    @events.select() { |event| event.is_for_this_week?() }
   end
   def remove_events(name)
-    if(!@events.key?(name))
-      raise Exception.new("Event does not exist") 
-    end
-    
-    event = @events[name]
-    @events.delete(name)
-    event
+    events = events_with_name(name)
+    events.each{ | event | @events.delete(event) }
   end 
   def events()
-    @events.collect() { |event_name, event| event }
+    @events
   end
 end

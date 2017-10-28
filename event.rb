@@ -1,7 +1,8 @@
 require 'location'
+require 'chronic'
 
 class Event
-  attr_accessor :start_time, :end_time
+  attr_accessor :start_time, :end_time, :name
   
   def initialize(name, params)
     raise ArgumentError.new("Parameter name is required" ) unless name
@@ -9,12 +10,26 @@ class Event
     raise ArgumentError.new("You must either supply end_time or set all_day to true") unless params[:end_time] || params[:all_day]
     
     @name = name
+    @all_day = false
     update_event(params)
   end
   def update_event(params)
-    @all_day = params[:all_day].nil? ? false : params[:all_day]
-    @start_time = params[:start_time]
-    @end_time = params[:end_time]
+    @all_day = params[:all_day] unless params[:all_day].nil?
+    
+    if(!params[:start_time].nil?)
+      @start_time = params[:start_time]  
+      if(@start_time.is_a?(String))
+        @start_time = Chronic.parse(@start_time)
+      end
+    end
+    
+    if(!params[:end_time].nil?)
+      @end_time = params[:end_time]
+      if(@end_time.is_a?(String))
+        @end_time = Chronic.parse(@end_time)
+      end
+    end
+    
     if(!params[:location].nil?)
       if(@location.nil?)
         @location = Location.new(params[:location])
@@ -44,7 +59,14 @@ class Event
     start_time.to_date == date || (!end_time.nil? && end_time.to_date == date) 
   end
   def is_for_this_week?()
-    daysDifference = start_time.to_date - Date.today
-    daysDifference > 0 && daysDifference <= 7 
+    daysDifferenceStart = start_time.to_date - Date.today
+    daysDifferenceEnd = end_time.to_date - Date.today unless end_time.nil?
+    
+    return (daysDifferenceStart >= 0 && daysDifferenceStart < 7) || 
+           (!end_time.nil? && daysDifferenceEnd >= 0 && daysDifferenceEnd < 7) 
+  end
+  def matches_regex?(regex)
+    # We could simply match to_s, but that would also include the hard coded text and dates
+    name =~ regex || (!@location.nil? && @location.matches_regex?(regex))
   end
 end
