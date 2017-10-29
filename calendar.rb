@@ -18,7 +18,7 @@ class Calendar
   def events_with_name(name)
     @events.select(){ |event| event.name == name }
   end 
-  def find_with_regex(regex)
+  def events_with_pattern(regex)
     events.select() { | event | event.matches_regex?(regex) }
   end
   def events_for_date(date)

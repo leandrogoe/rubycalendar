@@ -1,4 +1,5 @@
 class Location
+  attr_accessor :name, :address, :city, :state, :zip
   def initialize(params)
     raise ArgumentError.new("Parameter name is required" ) unless params[:name]
       
