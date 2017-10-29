@@ -83,6 +83,11 @@ class CalendarManager
     param
   end
   
+  def self.s_to_bool(boolean_string)
+    conv = { 'true' => true, 'false' => false, 'yes' => true, 'no' => false}
+    conv[boolean_string]
+  end
+  
   def self.request_parameters(command)
     params = []
     case command.downcase
@@ -92,10 +97,10 @@ class CalendarManager
       params[0] = request_parameter("Name")
       params[1] = {
         start_time: request_parameter("Start Time"),
-        end_time: request_parameter("End Time [All day]"),
+        all_day: s_to_bool(request_parameter("All Day?"))
      }
-     
-     params[1][:all_day] = params[1][:end_time].nil?
+       
+     params[1][:end_time] = request_parameter("End Time") unless params[1][:all_day];
      location_name = request_parameter("Location Name")
      
      if(location_name)
@@ -110,7 +115,7 @@ class CalendarManager
     when EVENTS_WITH_NAME, REMOVE_EVENTS
       params[0] = request_parameter("Name")
     when EVENTS_WITH_PATTERN
-      params[0] = request_parameter("Pattern")
+      params[0] = Regexp.new(request_parameter("Pattern"))
     when EVENTS_FOR_DATE
       params[0] = request_parameter("Date")
     when HELP, EVENTS_FOR_TODAY, EVENTS_THIS_WEEK, EVENTS
