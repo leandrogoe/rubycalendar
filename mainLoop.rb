@@ -57,13 +57,12 @@ class CalendarManager
   @@calendars = {}
   @@current_calendar = nil
   def self.create_calendar(name)
-    @@current_calendar = Calendar.new(name)
     if(@@calendars.key?(name))
       puts "Calendar already exists"
       return
     end
-    
-    @@calendars[name] = @current_calendar
+    @@current_calendar = Calendar.new(name)
+    @@calendars[name] = @@current_calendar
   end
   
   def self.open_calendar(name)

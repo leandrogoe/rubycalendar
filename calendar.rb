@@ -13,6 +13,10 @@ class Calendar
   end
   def update_events(name, params)
     events = events_with_name(name)
+    if(events.count == 0)
+      raise ArgumentError.new("No event found with such name")
+    end
+    
     events.each() { | event | event.update_event(params) } 
   end
   def events_with_name(name)
@@ -32,6 +36,10 @@ class Calendar
   end
   def remove_events(name)
     events = events_with_name(name)
+    if(events.count == 0)
+      raise ArgumentError.new("No event found with such name")
+    end
+    
     events.each{ | event | @events.delete(event) }
   end 
   def events()
