@@ -21,7 +21,7 @@ Calendar class offers the following functions:
 - `#update_events(name, params)` – For all calendar events matching the given name, then update the event's attributes based on the given params.
 - `#remove_events(name)` – Removes calendar events with the given name.
 
-Despite none of these methods write to the standard output, users may still interact with the library through the irb console and recieve human readable output. 
+Despite none of these methods write to the standard output, users may still interact with the library through the irb console and receive human readable output. 
 This is possible because classes have descriptive strings returned in the inspect method.
 
 Some examples:
